@@ -187,9 +187,23 @@ ${message}
     }
   );
 // Test Route
-app.get("/test", (req, res) => {
-  res.json({ message: "Backend working with Gemini!" });
+app.get("/api/conversations/:sessionId", (req, res) => {
+  db.all(
+    `SELECT role, content, created_at
+     FROM messages
+     WHERE session_id=?
+     ORDER BY created_at ASC`,
+    [req.params.sessionId],  // ✅ req is valid here
+    (err, rows) => {
+      if (err) return res.json([]);
+      res.json(rows);
+    }
+  );
 });
+// app.get("/test", (req, res) => {
+//   res.json({ message: "Backend working with Gemini!" });
+// });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on ${PORT}`));
+// const PORT = process.env.PORT || 5000;
+
+// app.listen(PORT, () => console.log(`Server running on ${PORT}`));
